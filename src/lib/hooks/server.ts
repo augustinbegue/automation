@@ -19,7 +19,7 @@ async function initialize() {
 
 		// Load webhook configuration
 		log.info('Loading configuration...');
-		const configPath = process.cwd() + '/automation.config.yaml';
+		const configPath = process.env.CONFIG_PATH || process.cwd() + '/automation.config.yaml';
 		const configData = await fs.readFile(configPath, 'utf-8');
 		const parsedConfig = load(configData);
 		loadConfig(parsedConfig);
