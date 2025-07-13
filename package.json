@@ -16,8 +16,6 @@
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
-		"@sveltejs/adapter-node": "^5.2.12",
-		"@sveltejs/kit": "^2.22.0",
 		"@sveltejs/vite-plugin-svelte": "^6.0.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/better-sqlite3": "^7.6.12",
@@ -39,8 +37,10 @@
 		"vite-plugin-devtools-json": "^0.2.0"
 	},
 	"dependencies": {
+		"@sveltejs/kit": "^2.22.0",
 		"@types/js-yaml": "^4.0.9",
 		"js-yaml": "^4.1.0",
+		"svelte-adapter-bun": "^0.5.2",
 		"tslog": "^4.9.3",
 		"zod": "^4.0.5"
 	}
