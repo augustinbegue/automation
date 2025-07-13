@@ -1,7 +1,6 @@
-import { fileURLToPath } from 'bun';
-import fs from 'node:fs/promises';
-import path, { dirname } from 'node:path';
 import { Logger } from 'tslog';
+
+import * as runShellScript from './action-run-shell-script';
 
 const log = new Logger({ name: 'actions' });
 
@@ -25,28 +24,14 @@ interface ActionModule {
 	runAction: ActionHandler;
 }
 
+const actionModules = [runShellScript] as ActionModule[];
 const actionHandlers = new Map<string, ActionHandler>();
 
-function importAction(actionName: string): Promise<ActionModule> {
-	return import(`./action-${actionName}.ts`);
-}
-
 export async function loadActions() {
-	const actionsDir = path.join(dirname(fileURLToPath(import.meta.url)));
-	const files = await fs.readdir(actionsDir);
-
-	for (const file of files) {
-		if (file === 'index.ts' || !file.endsWith('.ts')) continue;
-
-		try {
-			const module = await importAction(file.replace('action-', '').replace('.ts', ''));
-
-			if (module.actionName && module.runAction) {
-				actionHandlers.set(module.actionName, module.runAction);
-				log.info(`Loaded action: ${module.actionName}`);
-			}
-		} catch (error) {
-			log.error(`Failed to load action from ${file}:`, error);
+	for (const module of actionModules) {
+		if (module.actionName && module.runAction) {
+			actionHandlers.set(module.actionName, module.runAction);
+			log.info(`Loaded action: ${module.actionName}`);
 		}
 	}
 }
