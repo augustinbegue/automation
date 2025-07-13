@@ -1,0 +1,46 @@
+jobs:
+  servers-fans-outside:
+    name: 'Servers Fans - Outside Mode'
+    description: Set the servers fan to 50%
+    env:
+      FAN_SPEED: 50
+      MANUAL_FAN_CONTROL: true
+    actions:
+      - id: ipmi-fan-control
+        env:
+          HOSTNAME: 192.168.101.1
+      - id: ipmi-fan-control
+        env:
+          HOSTNAME: 192.168.101.2
+  servers-fans-inside:
+    name: 'Servers Fans - Inside Mode'
+    description: Set the servers fan to automatic curves
+    env:
+      FAN_SPEED: 25
+      MANUAL_FAN_CONTROL: true
+    actions:
+      - id: ipmi-fan-control
+        env:
+          HOSTNAME: 192.168.101.1
+      - id: ipmi-fan-control
+        env:
+          HOSTNAME: 192.168.101.2
+
+actions:
+  ipmi-fan-control:
+    type: run-shell-script
+    shell: /bin/sh
+    env:
+      USERNAME: root
+      PASSWORD: labzaq
+    script: |
+      #!/bin/sh
+      CREDS="-H $HOSTNAME -U $USERNAME -P $PASSWORD"
+      if [ -z "$MANUAL_FAN_CONTROL" ] ; then
+         ipmitool -I lanplus $CREDS raw 0x30 0x30 0x01 0x01
+        echo "$HOSTNAME: set fan to automatic curves"
+      else
+        ipmitool -I lanplus $CREDS raw 0x30 0x30 0x01 0x00
+        ipmitool -I lanplus $CREDS raw 0x30 0x30 0x02 0xff $FAN_SPEED
+        echo "$HOSTNAME: set fan speed to $FAN_SPEED"
+      fi
